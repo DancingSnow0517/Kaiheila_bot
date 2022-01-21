@@ -24,7 +24,7 @@ class NamedColor:
     DARK_GREEN: Color = Color(0, 170, 0)
     DARK_AQUA: Color = Color(0, 170, 170)
     DARK_RED: Color = Color(170, 0, 0)
-    DARK_PURPLR: Color = Color(170, 0, 170)
+    DARK_PURPLE: Color = Color(170, 0, 170)
     GOLD: Color = Color(255, 170, 0)
     GRAY: Color = Color(170, 170, 170)
     DARK_GRAY: Color = Color(85, 85, 85)

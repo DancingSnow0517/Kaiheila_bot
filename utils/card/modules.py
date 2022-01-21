@@ -309,7 +309,7 @@ class video(_file_module):
         :param title: 标题
         """
         super().__init__(src, title)
-        self.type = 'audio'
+        self.type = 'video'
 
 
 class audio(_file_module):
@@ -331,7 +331,7 @@ class audio(_file_module):
         :param cover: 封面地址
         """
         super().__init__(src, title)
-        self.type = 'video'
+        self.type = 'audio'
         self.cover = cover
 
     def build(self) -> dict:
