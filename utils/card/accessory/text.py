@@ -1,9 +1,9 @@
 from typing import List
 
-from utils.accessory.accessory import _Accessory
+from utils.card.accessory.accessory import base_Accessory
 
 
-class _Text(_Accessory):
+class base_Text(base_Accessory):
     """
     文字类元素基类
     """
@@ -12,7 +12,7 @@ class _Text(_Accessory):
         return {'type': self.type}
 
 
-class plain_text(_Text):
+class plain_text(base_Text):
     """
     构造纯文本元素
     """
@@ -34,7 +34,7 @@ class plain_text(_Text):
         return {'type': self.type, 'content': self.content}
 
 
-class kmarkdown(_Text):
+class kmarkdown(base_Text):
     """
     构造kmarkdown文本元素
     """
@@ -53,14 +53,14 @@ class kmarkdown(_Text):
         return {'type': self.type, 'content': self.content}
 
 
-class paragraph(_Text):
+class paragraph(base_Text):
     """
     构造多列文本元素
     """
     cols: int
-    fields: List[_Text]
+    fields: List[base_Text]
 
-    def __init__(self, cols: int, fields: List[_Text]) -> None:
+    def __init__(self, cols: int, fields: List[base_Text]) -> None:
         """
         构造多列文本
 

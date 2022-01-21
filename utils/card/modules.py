@@ -1,9 +1,9 @@
 import time
 from typing import List
 
-from utils.accessory.accessory import _Accessory
-from utils.accessory.non_text import _Non_text, image, button
-from utils.accessory.text import plain_text, _Text
+from utils.card.accessory.accessory import base_Accessory
+from utils.card.accessory.non_text import base_Non_text, image, button
+from utils.card.accessory.text import plain_text, base_Text
 
 
 class _module:
@@ -51,10 +51,10 @@ class section(_module):
      结构化的内容，显示文本+其它元素。
     """
     mode: str
-    text: _Text
-    accessory: _Non_text
+    text: base_Text
+    accessory: base_Non_text
 
-    def __init__(self, mode: str, text: _Text, accessory: _Non_text) -> None:
+    def __init__(self, mode: str, text: base_Text, accessory: base_Non_text) -> None:
         """
         构建内容模块
 
@@ -161,9 +161,9 @@ class context(_module):
 
     展示图文混合的内容。
     """
-    elements: List[_Accessory]
+    elements: List[base_Accessory]
 
-    def __init__(self, elements: List[_Accessory]) -> None:
+    def __init__(self, elements: List[base_Accessory]) -> None:
         """
         构建备注模块
 
