@@ -1,8 +1,8 @@
-from utils.card.accessory.accessory import base_Accessory
+from utils.card.accessory.accessory import BaseAccessory
 from utils.card.types import Theme
 
 
-class base_Non_text(base_Accessory):
+class BaseNonText(BaseAccessory):
     """
     非文字类元素基类
     """
@@ -10,7 +10,7 @@ class base_Non_text(base_Accessory):
         return {'type': self.type}
 
 
-class image(base_Non_text):
+class Image(BaseNonText):
     """
     显示图片元素
     """
@@ -38,7 +38,7 @@ class image(base_Non_text):
         return {'type': self.type, 'src': self.src, 'alt': self.alt, 'size': self.size, 'circle': self.circle}
 
 
-class button(base_Non_text):
+class Button(BaseNonText):
     theme: str
     value: str
     click: str

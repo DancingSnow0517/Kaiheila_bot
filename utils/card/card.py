@@ -1,7 +1,7 @@
 from typing import Optional, List
 
 from utils.card.types import *
-from utils.card.modules import _module
+from utils.card.modules import _Module
 from utils.color import Color
 
 
@@ -13,9 +13,9 @@ class Card:
     theme: str
     size: str
     color: Optional[Color]
-    modules: List[_module]
+    modules: List[_Module]
 
-    def __init__(self, modules: List[_module], theme: str = Theme.PRIMARY, size: str = Size.LG, color: Color = None) -> None:
+    def __init__(self, modules: List[_Module], theme: str = Theme.PRIMARY, size: str = Size.LG, color: Color = None) -> None:
         """
         构建卡片
 

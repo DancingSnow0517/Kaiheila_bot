@@ -1,4 +1,4 @@
-class base_Accessory:
+class BaseAccessory:
     """
     元素基类
     """

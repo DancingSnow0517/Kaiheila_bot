@@ -1,12 +1,12 @@
 import time
 from typing import List
 
-from utils.card.accessory.accessory import base_Accessory
-from utils.card.accessory.non_text import base_Non_text, image, button
-from utils.card.accessory.text import plain_text, base_Text
+from utils.card.accessory.accessory import BaseAccessory
+from utils.card.accessory.non_text import BaseNonText, Image, Button
+from utils.card.accessory.text import PlainText, BaseText
 
 
-class _module:
+class _Module:
     """
     模块基类
     """
@@ -21,13 +21,13 @@ class _module:
         return {'type': self.type}
 
 
-class header(_module):
+class Header(_Module):
     """
     构建标题模块
 
     标题模块只能支持展示标准文本（text），突出标题样式。
     """
-    text: plain_text
+    text: PlainText
 
     def __init__(self, text: str = '') -> None:
         """
@@ -38,23 +38,23 @@ class header(_module):
         :param text: 标题内容
         """
         self.type = 'header'
-        self.text = plain_text(content=text)
+        self.text = PlainText(content=text)
 
     def build(self) -> dict:
         return {"type": self.type, "text": self.text.build()}
 
 
-class section(_module):
+class Section(_Module):
     """
     构建内容模块
 
      结构化的内容，显示文本+其它元素。
     """
     mode: str
-    text: base_Text
-    accessory: base_Non_text
+    text: BaseText
+    accessory: BaseNonText
 
-    def __init__(self, text: base_Text, mode: str = 'right', accessory: base_Non_text = None) -> None:
+    def __init__(self, text: BaseText, mode: str = 'right', accessory: BaseNonText = None) -> None:
         """
         构建内容模块
 
@@ -77,15 +77,15 @@ class section(_module):
         return ret
 
 
-class image_group(_module):
+class ImageGroup(_Module):
     """
     构建图片组模块
 
     1 到多张图片的组合
     """
-    elements: List[image]
+    elements: List[Image]
 
-    def __init__(self, elements: List[image]) -> None:
+    def __init__(self, elements: List[Image]) -> None:
         """
         构建图片组模块
 
@@ -105,13 +105,13 @@ class image_group(_module):
         return ret
 
 
-class container(_module):
+class Container(_Module):
     """
     构建容器模块
     """
-    elements: List[image]
+    elements: List[Image]
 
-    def __init__(self, elements: List[image]) -> None:
+    def __init__(self, elements: List[Image]) -> None:
         """
         构建容器模块
 
@@ -131,15 +131,15 @@ class container(_module):
         return ret
 
 
-class action_group(_module):
+class ActionGroup(_Module):
     """
     构建交互模块
 
     交互模块中包含交互控件元素，目前支持的交互控件为按钮（button）
     """
-    elements: List[button]
+    elements: List[Button]
 
-    def __init__(self, elements: List[button]) -> None:
+    def __init__(self, elements: List[Button]) -> None:
         """
         构建交互模块
 
@@ -159,15 +159,15 @@ class action_group(_module):
         return ret
 
 
-class context(_module):
+class Context(_Module):
     """
     构建备注模块
 
     展示图文混合的内容。
     """
-    elements: List[base_Accessory]
+    elements: List[BaseAccessory]
 
-    def __init__(self, elements: List[base_Accessory]) -> None:
+    def __init__(self, elements: List[BaseAccessory]) -> None:
         """
         构建备注模块
 
@@ -187,7 +187,7 @@ class context(_module):
         return ret
 
 
-class divider(_module):
+class Divider(_Module):
     """
     构建分割线模块
 
@@ -206,7 +206,7 @@ class divider(_module):
         return {'type': self.type}
 
 
-class countdown(_module):
+class Countdown(_Module):
     """
     构建倒计时模块
 
@@ -216,29 +216,29 @@ class countdown(_module):
     startTime: int
     mode: str
 
-    def __init__(self, endTime: int, mode: str, startTime: int = time.time() * 1000) -> None:
+    def __init__(self, endtime: int, mode: str, starttime: int = time.time() * 1000) -> None:
         """
         构建倒计时模块
 
         展示倒计时
 
         :param mode: 倒计时样式, 按天显示，按小时显示或者按秒显示
-        :param endTime: 到期的毫秒时间戳
-        :param startTime: 起始的毫秒时间戳，仅当mode为second才有这个字段，默认为当前时间
+        :param endtime: 到期的毫秒时间戳
+        :param starttime: 起始的毫秒时间戳，仅当mode为second才有这个字段，默认为当前时间
         """
         self.type = 'countdown'
         if mode != 'day' and mode != 'hour' and mode != 'second':
             raise Exception('mode必须为 day|hour|second')
-        if endTime > startTime:
+        if endtime > starttime:
             raise Exception('结束时间要大于开始时间')
-        self.endTime = endTime
-        self.startTime = startTime
+        self.endTime = endtime
+        self.startTime = starttime
 
     def build(self) -> dict:
         return {'type': self.type, 'mode': self.mode, 'endTime': self.endTime, 'startTime': self.startTime}
 
 
-class invite(_module):
+class Invite(_Module):
     """
     构建邀请模块
 
@@ -261,7 +261,7 @@ class invite(_module):
         return {'type': self.type, 'code': self.code}
 
 
-class _file_module(_module):
+class _FileModule(_Module):
     """
     文件模块基类
     """
@@ -276,7 +276,7 @@ class _file_module(_module):
         return {'type': self.type, 'src': self.src, 'title': self.title}
 
 
-class file(_file_module):
+class File(_FileModule):
     """
     构建文件模块
 
@@ -292,7 +292,7 @@ class file(_file_module):
         self.type = 'file'
 
 
-class video(_file_module):
+class Video(_FileModule):
     """
     构建视频模块
 
@@ -312,7 +312,7 @@ class video(_file_module):
         self.type = 'video'
 
 
-class audio(_file_module):
+class Audio(_FileModule):
     """
     构建音频模块
 

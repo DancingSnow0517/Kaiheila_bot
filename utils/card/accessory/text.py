@@ -1,9 +1,9 @@
 from typing import List
 
-from utils.card.accessory.accessory import base_Accessory
+from utils.card.accessory.accessory import BaseAccessory
 
 
-class base_Text(base_Accessory):
+class BaseText(BaseAccessory):
     """
     文字类元素基类
     """
@@ -12,7 +12,7 @@ class base_Text(base_Accessory):
         return {'type': self.type}
 
 
-class plain_text(base_Text):
+class PlainText(BaseText):
     """
     构造纯文本元素
     """
@@ -34,7 +34,7 @@ class plain_text(base_Text):
         return {'type': self.type, 'content': self.content}
 
 
-class kmarkdown(base_Text):
+class Kmarkdown(BaseText):
     """
     构造kmarkdown文本元素
     """
@@ -53,14 +53,14 @@ class kmarkdown(base_Text):
         return {'type': self.type, 'content': self.content}
 
 
-class paragraph(base_Text):
+class Paragraph(BaseText):
     """
     构造多列文本元素
     """
     cols: int
-    fields: List[base_Text]
+    fields: List[BaseText]
 
-    def __init__(self, cols: int, fields: List[base_Text]) -> None:
+    def __init__(self, cols: int, fields: List[BaseText]) -> None:
         """
         构造多列文本
 
@@ -72,7 +72,7 @@ class paragraph(base_Text):
         if len(fields) != cols:
             raise Exception('文本列数与列表不符')
         for i in fields:
-            if isinstance(i, paragraph):
+            if isinstance(i, Paragraph):
                 raise Exception('文本组件不能为paragraph')
         self.type = 'paragraph'
         self.cols = cols
