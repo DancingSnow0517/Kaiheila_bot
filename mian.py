@@ -5,6 +5,7 @@ import logging
 
 from utils.card.card import Card
 from utils.card.modules import *
+from utils.card.accessory.text import *
 
 
 def get_token() -> str:
@@ -13,8 +14,22 @@ def get_token() -> str:
 
 
 if __name__ == '__main__':
-    card = Card([header('测试卡片')])
-    print(json.dumps([card.build()]))
+    card = Card(
+        [
+            header('测试卡片'),
+            section(paragraph(3, [
+                kmarkdown('**Repo**\ngithub.com'),
+                kmarkdown('**Branch/Tag**\nmain'),
+                kmarkdown('**Pusher**\ndddd')
+            ]), 'right', image('https://avatars.githubusercontent.com/u/72912429', size='sm')),
+            divider(),
+            header('Commits'),
+            section(paragraph(2, [
+                kmarkdown('**Commits Hash**\n[abcdabcd](github.com)'),
+                kmarkdown('**Message**\nfix markdown (#97)')
+            ]))
+        ]
+    )
     khl_bot = Bot(token=get_token())
     logging.basicConfig(level='INFO')
 

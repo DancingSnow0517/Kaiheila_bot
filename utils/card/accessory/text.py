@@ -76,7 +76,7 @@ class paragraph(base_Text):
                 raise Exception('文本组件不能为paragraph')
         self.type = 'paragraph'
         self.cols = cols
-        self.fields
+        self.fields = fields
 
     def build(self) -> dict:
         ret = {'type': self.type, 'cols': self.cols, 'fields': []}

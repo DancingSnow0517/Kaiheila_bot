@@ -54,7 +54,7 @@ class section(_module):
     text: base_Text
     accessory: base_Non_text
 
-    def __init__(self, mode: str, text: base_Text, accessory: base_Non_text) -> None:
+    def __init__(self, text: base_Text, mode: str = 'right', accessory: base_Non_text = None) -> None:
         """
         构建内容模块
 
@@ -70,7 +70,11 @@ class section(_module):
         self.accessory = accessory
 
     def build(self) -> dict:
-        return {'type': self.type, 'mode': self.mode, 'text': self.text.build(), 'accessory': self.accessory.build()}
+        ret = {'type': self.type, 'mode': self.mode, 'text': self.text.build()}
+        if self.accessory is None:
+            return ret
+        ret['accessory'] = self.accessory.build()
+        return ret
 
 
 class image_group(_module):
