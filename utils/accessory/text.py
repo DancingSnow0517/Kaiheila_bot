@@ -1,8 +1,12 @@
 from typing import List
 
+from utils.accessory.accessory import _Accessory
 
-class _Text:
-    type: str
+
+class _Text(_Accessory):
+    """
+    文字类元素基类
+    """
 
     def build(self) -> dict:
         return {'type': self.type}
@@ -10,18 +14,21 @@ class _Text:
 
 class plain_text(_Text):
     """
-    构造纯文本
+    构造纯文本元素
     """
     content: str
+    emoji: bool
 
-    def __init__(self, content: str = '') -> None:
+    def __init__(self, content: str = '', emoji=True) -> None:
         """
         构造纯文本
 
         :param content: 文本内容
+        :param emoji: 默认为 true。如果为 true,会把 emoji 的 shortcut 转为 emoji
         """
         self.type = 'plain-text'
         self.content = content
+        self.emoji = emoji
 
     def build(self) -> dict:
         return {'type': self.type, 'content': self.content}
@@ -29,7 +36,7 @@ class plain_text(_Text):
 
 class kmarkdown(_Text):
     """
-    构造kmarkdown文本
+    构造kmarkdown文本元素
     """
     content: str
 
@@ -48,7 +55,7 @@ class kmarkdown(_Text):
 
 class paragraph(_Text):
     """
-    构造多列文本
+    构造多列文本元素
     """
     cols: int
     fields: List[_Text]
@@ -57,9 +64,11 @@ class paragraph(_Text):
         """
         构造多列文本
 
-        :param cols: 列数
+        :param cols: 列数 只能为 1-3
         :param fields: 文本组件列表
         """
+        if not (1 <= cols <= 3):
+            raise Exception('文本列数不为 1-3')
         if len(fields) != cols:
             raise Exception('文本列数与列表不符')
         for i in fields:

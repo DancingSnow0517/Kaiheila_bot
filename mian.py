@@ -1,4 +1,5 @@
 from khl import Bot, Message
+import logging
 
 
 def get_token() -> str:
@@ -8,9 +9,10 @@ def get_token() -> str:
 
 if __name__ == '__main__':
     khl_bot = Bot(token=get_token())
+    logging.basicConfig(level='INFO')
 
     @khl_bot.command(name='hello', prefixes=['!!', '！！'])
     async def world(msg: Message):
-        await msg.ctx.channel.send('world')
+        await msg.reply('world')
 
     khl_bot.run()
