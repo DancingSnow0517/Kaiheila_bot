@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# kaiheila_bot
+/TOKEN
+.idea/
