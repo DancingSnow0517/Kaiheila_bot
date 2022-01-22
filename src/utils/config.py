@@ -1,57 +1,76 @@
-import json
 import os.path
-from typing import List, Dict
+from typing import List, Dict, Optional
 
-default_config = {
-    "token": '',
-    'rcon': [],
-    'permission': {}
-}
+from mcdreforged.utils.serializer import Serializable
+
+from ruamel import yaml
 
 
-class RconServer:
+class _Config(Serializable):
+    @classmethod
+    def load(cls, path: str):
+        if not os.path.exists(path):
+            cls.get_default().save()
+            return cls.get_default()
+        with open(path, "r", encoding="UTF-8") as fp:
+            return cls.deserialize(yaml.safe_load(fp))
+
+    def save(self, path: str):
+        print(self.serialize())
+        with open(path, "w", encoding="UTF-8") as fp:
+            yaml.dump(self.serialize(), fp, allow_unicode=True, indent=4)
+
+
+class RconServer(_Config):
     address: str
     port: int
     password: str
 
-    def __init__(self, address: str, port: int, password: str) -> None:
-        self.address = address
-        self.port = port
-        self.password = password
 
-    def to_dict(self) -> dict:
-        return {'address': self.address, 'port': self.port, 'password': self.password}
+class Subscription(_Config):
+    name: str
+    dynamic: bool
+    live: bool
 
 
-class Config:
-    config_file_path: str
-    token: str
-    rcon: List[RconServer]
-    permission: Dict[str, int]
+class Config(_Config):
+    token: str = ''
+    rcon: List[dict] = []
+    permission: List[str] = []
+    bilibili_permission: bool = True
+    subscription: Dict[str, dict] = {}
+    prefixes: List[str] = ['!!', '！！']
 
-    def wirte_to_config(self):
-        js = {'token': self.token, 'rcon': []}
+    @classmethod
+    def load(cls, path: str = 'config.yml'):
+        return super().load(path)
+
+    def save(self, path: str = 'config.yml'):
+        return super().save(path)
+
+    def add_rocn(self, address: str, port: int, password: str):
+        self.rcon.append({'address': address, 'port': port, 'password': password})
+
+    def get_rcon_list(self) -> List[RconServer]:
+        ret = []
         for i in self.rcon:
-            js['rcon'].append(i.to_dict())
-        js['permission'] = self.permission
-        with open(self.config_file_path, 'w', encoding='utf-8') as f:
-            json.dump(js, f, ensure_ascii=False, indent=4)
+            ret.append(RconServer(address=i['address'], port=i['port'], password=i['password']))
+        return ret
 
-    def read_from_json(self):
+    def add_subscription(self, uid: str, name: str, live=True, dynamic=True) -> bool:
+        if uid in self.subscription:
+            return False
+        self.subscription[uid] = {'name': name, 'live': live, 'dynamic': dynamic}
+        self.save()
+        return True
+        pass
 
-        if os.path.exists(self.config_file_path):
-            with open(self.config_file_path, 'r', encoding='utf-8') as f:
-                js = json.load(f)
+    def get_subscription(self, uid: str) -> Optional[Subscription]:
+        if uid in self.subscription:
+            return Subscription(
+                name=self.subscription[uid]['name'],
+                dynamic=self.subscription[uid]['dynamic'],
+                live=self.subscription[uid]['live']
+            )
         else:
-            js = default_config
-        self.token = js['token']
-        for i in js['rcon']:
-            self.rcon.append(RconServer(js[i]['address'], js[i]['port'], js[i]['password']))
-        self.permission = js['permission']
-        self.wirte_to_config()
-
-    def __init__(self, config_file_path: str) -> None:
-        self.config_file_path = config_file_path
-        self.rcon = []
-        self.token = ''
-        self.permission = {}
+            return None

@@ -1,45 +1,22 @@
 import logging
 
-from khl import Bot, Message
+from khl import Bot
 
-from khl_card.accessory import *
-from khl_card.modules import *
-from khl_card.card import *
-
+from utils import commands
 from utils.config import Config
 
-if __name__ == '__main__':
-    config = Config('config.json')
-    config.read_from_json()
+help_msg = '''[!!help] 显示帮助信息
+[!!mc] 发送消息到游戏
+[!!reload] 重新加载配置文件'''
 
-    card = Card(
-        [
-            Header('测试卡片'),
-            Section(Paragraph(3, [
-                Kmarkdown('**Repo**\ngithub.com'),
-                Kmarkdown('**Branch/Tag**\nmain'),
-                Kmarkdown('**Pusher**\ndddd')
-            ]), 'right', Image('https://avatars.githubusercontent.com/u/72912429', size='sm')),
-            Divider(),
-            Header('Commits'),
-            Section(Paragraph(2, [
-                Kmarkdown('**Commits Hash**\n [abcdabcd](https://kaiheila.cn)'),
-                Kmarkdown('**Message**\n fix markdown (#97)')
-            ]))
-        ]
-    )
-    khl_bot = Bot(token=config.token)
+config: Config
+
+if __name__ == '__main__':
     logging.basicConfig(level='INFO', format='[%(asctime)s] [%(threadName)s/%(levelname)s]: %(message)s')
 
+    config = Config.load()
+    khl_bot = Bot(token=config.token)
 
-    @khl_bot.command(name='hello', prefixes=['!!', '！！'])
-    async def world(msg: Message):
-        await msg.reply('world')
-
-
-    @khl_bot.command(name='test', prefixes=['!!', '！！'])
-    async def test(msg: Message):
-        await msg.reply([card.build()])
-
+    commands.register(khl_bot, config.prefixes, config)
 
     khl_bot.run()
