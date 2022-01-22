@@ -30,7 +30,7 @@ if __name__ == '__main__':
         ]
     )
     khl_bot = Bot(token=get_token())
-    logging.basicConfig(level='INFO')
+    logging.basicConfig(level='INFO', format='[%(asctime)s] [%(threadName)s/%(levelname)s]: %(message)s')
 
 
     @khl_bot.command(name='hello', prefixes=['!!', '！！'])

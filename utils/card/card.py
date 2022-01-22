@@ -2,7 +2,7 @@ from typing import Optional, List
 
 from utils.card.types import *
 from utils.card.modules import _Module
-from utils.color import Color
+from utils.card.color import Color
 
 
 class Card:

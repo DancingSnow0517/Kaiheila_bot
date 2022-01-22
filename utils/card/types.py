@@ -1,4 +1,4 @@
-from utils.color import Color
+from utils.card.color import Color
 
 
 class Theme:
