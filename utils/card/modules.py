@@ -1,9 +1,9 @@
 import time
 from typing import List
 
-from utils.card.accessory.accessory import BaseAccessory
-from utils.card.accessory.non_text import BaseNonText, Image, Button
-from utils.card.accessory.text import PlainText, BaseText
+from utils.card.accessory import _BaseAccessory
+from utils.card.accessory import _BaseNonText, Image, Button
+from utils.card.accessory import PlainText, _BaseText
 
 
 class _Module:
@@ -165,9 +165,9 @@ class Context(_Module):
 
     展示图文混合的内容。
     """
-    elements: List[BaseAccessory]
+    elements: List[_BaseAccessory]
 
-    def __init__(self, elements: List[BaseAccessory]) -> None:
+    def __init__(self, elements: List[_BaseAccessory]) -> None:
         """
         构建备注模块
 
