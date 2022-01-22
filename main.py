@@ -2,9 +2,9 @@ import logging
 
 from khl import Bot, Message
 
-from utils.card.accessory.text import *
-from utils.card.card import Card
-from utils.card.modules import *
+from khl_card.accessory import *
+from khl_card.modules import *
+from khl_card.card import *
 
 
 def get_token() -> str:
