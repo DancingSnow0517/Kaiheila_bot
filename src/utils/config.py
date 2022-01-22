@@ -16,7 +16,6 @@ class _Config(Serializable):
             return cls.deserialize(yaml.safe_load(fp))
 
     def save(self, path: str):
-        print(self.serialize())
         with open(path, "w", encoding="UTF-8") as fp:
             yaml.dump(self.serialize(), fp, allow_unicode=True, indent=4)
 
@@ -74,3 +73,10 @@ class Config(_Config):
             )
         else:
             return None
+
+    def del_subscription(self, uid: str) -> bool:
+        if uid in self.subscription:
+            del self.subscription[uid]
+            self.save()
+            return True
+        return False

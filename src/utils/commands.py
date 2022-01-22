@@ -35,12 +35,15 @@ def register(bot: Bot, prefixes, config: Config):
         await msg.reply([help_card.build()])
 
     @bot.command(aliases=['关注'], prefixes=prefixes)
-    async def sub(msg: Message, uid: str):
+    async def sub(msg: Message, uid: str = ''):
         global name
         if config.bilibili_permission:
             if msg.author.id not in config.permission:
                 await msg.reply('你没有权限执行')
                 return
+        if uid == '':
+            await msg.reply('请输入要关注的UID')
+            return
         up = config.get_subscription(uid)
         if up is None:
             br = BiliReq()
@@ -57,10 +60,41 @@ def register(bot: Bot, prefixes, config: Config):
                         Section(Kmarkdown(f'```\n{str(e)}\n```'))
                     ])
                     await msg.reply([err_card.build()])
-        print(f'uid: {uid}, name: {name}')
         result = config.add_subscription(uid, name)
         if result:
             await msg.reply(f'已关注 {name}（{uid}）')
         else:
             await msg.reply(f'{name}（{uid}）已经关注了')
-        # await msg.reply(f'正在关注 {uid}')
+
+    @bot.command(aliases=['取关'], prefixes=prefixes)
+    async def del_sub(msg: Message, uid: str = ''):
+        if config.bilibili_permission:
+            if msg.author.id not in config.permission:
+                await msg.reply('你没有权限执行')
+                return
+        if uid == '':
+            await msg.reply('请输入要关注的UID')
+            return
+        name = config.subscription[uid]['name']
+        result = config.del_subscription(uid)
+        if result:
+            await msg.reply(f'已取关 {name}（{uid}）')
+        else:
+            await msg.reply(f'UID（{uid}）未关注')
+
+    @bot.command(name='sub_list', aliases=['关注列表'], prefixes=prefixes)
+    async def sub_list(msg: Message):
+        names = '**名字**\n'
+        stats = '**直播 | 动态**\n'
+        for i in config.subscription:
+            t = config.get_subscription(i)
+            names += f'{t.name}({i})\n'
+            stats += f'{"开" if t.live else "关"}    |    {"开" if t.dynamic else "关"}\n'
+        list_card = Card([
+            Header('关注列表'),
+            Section(Paragraph(2, [
+                Kmarkdown(names),
+                Kmarkdown(stats)
+            ]))
+        ])
+        await msg.reply([list_card.build()])
