@@ -1,0 +1,2 @@
+KaiHeiLaCardBuilder >= 1.0.3
+mcdreforged >= 2.3.0

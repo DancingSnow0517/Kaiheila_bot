@@ -6,13 +6,12 @@ from khl_card.accessory import *
 from khl_card.modules import *
 from khl_card.card import *
 
-
-def get_token() -> str:
-    with open('TOKEN', 'r') as f:
-        return f.read()
-
+from utils.config import Config
 
 if __name__ == '__main__':
+    config = Config('config.json')
+    config.read_from_json()
+
     card = Card(
         [
             Header('测试卡片'),
@@ -29,7 +28,7 @@ if __name__ == '__main__':
             ]))
         ]
     )
-    khl_bot = Bot(token=get_token())
+    khl_bot = Bot(token=config.token)
     logging.basicConfig(level='INFO', format='[%(asctime)s] [%(threadName)s/%(levelname)s]: %(message)s')
 
 

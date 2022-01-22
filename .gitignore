@@ -131,3 +131,4 @@ dmypy.json
 # kaiheila_bot
 /TOKEN
 .idea/
+/src/config.json
