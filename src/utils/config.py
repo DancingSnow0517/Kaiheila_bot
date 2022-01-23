@@ -2,11 +2,12 @@ import os.path
 from typing import List, Dict, Optional
 
 from mcdreforged.utils.serializer import Serializable
-
 from ruamel import yaml
 
+from .libs.chatbridge.core.config import ClientConfig
 
-class _Config(Serializable):
+
+class _Config(ClientConfig):
     @classmethod
     def load(cls, path: str):
         if not os.path.exists(path):
@@ -17,16 +18,16 @@ class _Config(Serializable):
 
     def save(self, path: str):
         with open(path, "w", encoding="UTF-8") as fp:
-            yaml.dump(self.serialize(), fp, allow_unicode=True, indent=4)
+            yaml.safe_dump(self.serialize(), fp, allow_unicode=True, indent=4)
 
 
-class RconServer(_Config):
+class RconServer(Serializable):
     address: str
     port: int
     password: str
 
 
-class Subscription(_Config):
+class Subscription(Serializable):
     name: str
     dynamic: bool
     live: bool
@@ -43,6 +44,8 @@ class Config(_Config):
     delete_pyppeteer: bool = False
     khl_server_id: str = ''
     khl_channel: List[str] = []
+    khl_channel_mc_chat: str = ""
+    log_level: str = "DEBUG"
 
     @classmethod
     def load(cls, path: str = 'config.yml'):
