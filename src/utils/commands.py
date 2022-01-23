@@ -44,6 +44,9 @@ def register(bot: Bot, prefixes, config: Config):
         if uid == '':
             await msg.reply('请输入要关注的UID')
             return
+        if not uid.isdecimal():
+            await msg.reply('UID 必须为纯数字')
+            return
         up = config.get_subscription(uid)
         if up is None:
             br = BiliReq()
@@ -75,6 +78,9 @@ def register(bot: Bot, prefixes, config: Config):
         if uid == '':
             await msg.reply('请输入要关注的UID')
             return
+        if not uid.isdecimal():
+            await msg.reply('UID 必须为纯数字')
+            return
         name = config.subscription[uid]['name']
         result = config.del_subscription(uid)
         if result:
@@ -98,3 +104,87 @@ def register(bot: Bot, prefixes, config: Config):
             ]))
         ])
         await msg.reply([list_card.build()])
+
+    @bot.command(aliases=['开启动态'], prefixes=prefixes)
+    async def dy_on(msg: Message, uid: str):
+        if config.bilibili_permission:
+            if msg.author.id not in config.permission:
+                await msg.reply('你没有权限执行')
+                return
+        if uid == '':
+            await msg.reply('请输入要关注的UID')
+            return
+        if not uid.isdecimal():
+            await msg.reply('UID 必须为纯数字')
+            return
+
+        if uid not in config.subscription:
+            await msg.reply(f'UID（{uid}）未关注，请先关注后再操作')
+        else:
+            name = config.subscription[uid]['name']
+            config.subscription[uid]['dynamic'] = True
+            config.save()
+            await msg.reply(f'已开启 {name}（{uid}）的动态推送')
+
+    @bot.command(aliases=['关闭动态'], prefixes=prefixes)
+    async def dy_off(msg: Message, uid: str):
+        if config.bilibili_permission:
+            if msg.author.id not in config.permission:
+                await msg.reply('你没有权限执行')
+                return
+        if uid == '':
+            await msg.reply('请输入要关注的UID')
+            return
+        if not uid.isdecimal():
+            await msg.reply('UID 必须为纯数字')
+            return
+
+        if uid not in config.subscription:
+            await msg.reply(f'UID（{uid}）未关注，请先关注后再操作')
+        else:
+            name = config.subscription[uid]['name']
+            config.subscription[uid]['dynamic'] = False
+            config.save()
+            await msg.reply(f'已关闭 {name}（{uid}）的动态推送')
+
+    @bot.command(aliases=['开启直播'], prefixes=prefixes)
+    async def live_on(msg: Message, uid: str):
+        if config.bilibili_permission:
+            if msg.author.id not in config.permission:
+                await msg.reply('你没有权限执行')
+                return
+        if uid == '':
+            await msg.reply('请输入要关注的UID')
+            return
+        if not uid.isdecimal():
+            await msg.reply('UID 必须为纯数字')
+            return
+
+        if uid not in config.subscription:
+            await msg.reply(f'UID（{uid}）未关注，请先关注后再操作')
+        else:
+            name = config.subscription[uid]['name']
+            config.subscription[uid]['live'] = True
+            config.save()
+            await msg.reply(f'已开启 {name}（{uid}）的直播动态推送')
+
+    @bot.command(aliases=['关闭直播'], prefixes=prefixes)
+    async def live_off(msg: Message, uid: str):
+        if config.bilibili_permission:
+            if msg.author.id not in config.permission:
+                await msg.reply('你没有权限执行')
+                return
+        if uid == '':
+            await msg.reply('请输入要关注的UID')
+            return
+        if not uid.isdecimal():
+            await msg.reply('UID 必须为纯数字')
+            return
+
+        if uid not in config.subscription:
+            await msg.reply(f'UID（{uid}）未关注，请先关注后再操作')
+        else:
+            name = config.subscription[uid]['name']
+            config.subscription[uid]['live'] = False
+            config.save()
+            await msg.reply(f'已关闭 {name}（{uid}）的直播动态推送')

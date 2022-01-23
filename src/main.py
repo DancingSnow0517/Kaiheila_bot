@@ -31,10 +31,4 @@ if __name__ == '__main__':
         await dy_pusher(khl_bot, config)
         await live_pusher(khl_bot, config)
 
-    # 计划任务
-    # scheduler = BackgroundScheduler()
-    # intervalTrigger = IntervalTrigger(seconds=10)
-    # scheduler.add_job(dy_pusher, intervalTrigger, id='dy_pusher', args=[khl_bot])
-    # scheduler.start()
-
     khl_bot.run()
