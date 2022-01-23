@@ -39,6 +39,10 @@ class Config(_Config):
     bilibili_permission: bool = True
     subscription: Dict[str, dict] = {}
     prefixes: List[str] = ['!!', '！！']
+    next: int = 0
+    delete_pyppeteer: bool = False
+    khl_server_id: str = ''
+    khl_channel: List[str] = []
 
     @classmethod
     def load(cls, path: str = 'config.yml'):
@@ -80,3 +84,17 @@ class Config(_Config):
             self.save()
             return True
         return False
+
+    def updata_subscription(self, uid: str, name: str):
+        self.subscription[uid]['name'] = name
+        self.save()
+
+    def getnext_subscription_uid(self) -> Optional[str]:
+        sub_list = list(self.subscription.keys())
+        if not sub_list:
+            return None
+        if self.next+1 >= len(sub_list):
+            self.next = 0
+        else:
+            self.next += 1
+        return sub_list[self.next]

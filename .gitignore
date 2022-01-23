@@ -133,3 +133,4 @@ dmypy.json
 .idea/
 /src/config.json
 /src/config.yml
+/src/Temp/
