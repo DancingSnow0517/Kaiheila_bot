@@ -188,3 +188,21 @@ def register(bot: Bot, prefixes, config: Config):
             config.subscription[uid]['live'] = False
             config.save()
             await msg.reply(f'已关闭 {name}（{uid}）的直播动态推送')
+
+    @bot.command(aliases=['开启权限'], prefixes=prefixes)
+    async def perm_on(msg: Message):
+        if msg.author.id not in config.permission:
+            await msg.reply('你没有权限执行')
+            return
+        config.bilibili_permission = True
+        config.save()
+        await msg.reply('权限已经开启了，只有管理员可以操作')
+
+    @bot.command(aliases=['关闭权限'], prefixes=prefixes)
+    async def perm_off(msg: Message):
+        if msg.author.id not in config.permission:
+            await msg.reply('你没有权限执行')
+            return
+        config.bilibili_permission = False
+        config.save()
+        await msg.reply('权限已经关闭了，所有人均可操作')

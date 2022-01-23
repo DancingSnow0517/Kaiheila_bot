@@ -12,7 +12,6 @@ status = {}
 
 async def live_pusher(bot: Bot, config: Config):
     """直播推送"""
-
     uids = config.get_live_uid_list()
 
     if not uids:
@@ -39,7 +38,8 @@ async def live_pusher(bot: Bot, config: Config):
             log.info(f"检测到开播：{name}（{uid}）")
             live_msg = Card([
                 Header(f'{name} 正在直播：'),
-                Section(Kmarkdown(title), accessory=Image(cover, size='sm')),
+                Section(Kmarkdown(title)),
+                Container([Image(cover)]),
                 Section(Kmarkdown(f'[网页链接]({url})'))
             ])
 
