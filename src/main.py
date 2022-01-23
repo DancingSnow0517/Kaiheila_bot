@@ -1,13 +1,12 @@
 import logging
 
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.triggers.interval import IntervalTrigger
 from khl import Bot
 
-from utils.browser import delete_pyppeteer, install
-from utils.pusher.dynamic_pusher import dy_pusher
 from utils import commands
+from utils.browser import delete_pyppeteer, install
 from utils.config import Config
+from utils.pusher.dynamic_pusher import dy_pusher
+from utils.pusher.live_pusher import live_pusher
 
 help_msg = '''[!!help] 显示帮助信息
 [!!mc] 发送消息到游戏
@@ -27,9 +26,10 @@ if __name__ == '__main__':
     delete_pyppeteer(config)
     install()
 
-    @khl_bot.task.add_interval(seconds=10)
-    async def dy_push():
+    @khl_bot.task.add_interval(seconds=10, timezone='Asia/Shanghai')
+    async def push():
         await dy_pusher(khl_bot, config)
+        await live_pusher(khl_bot, config)
 
     # 计划任务
     # scheduler = BackgroundScheduler()

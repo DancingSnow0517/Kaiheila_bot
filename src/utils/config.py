@@ -98,3 +98,10 @@ class Config(_Config):
         else:
             self.next += 1
         return sub_list[self.next]
+
+    def get_live_uid_list(self) -> List[str]:
+        ret = []
+        for i in self.subscription:
+            if self.subscription[i]['live']:
+                ret.append(i)
+        return ret

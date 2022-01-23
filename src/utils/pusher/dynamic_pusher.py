@@ -15,11 +15,11 @@ last_time: dict = {}
 
 async def dy_pusher(bot: Bot, config: Config):
     """动态推送"""
-    log.info('动态推送头')
     uid = config.getnext_subscription_uid()
+    if not config.subscription[uid]['dynamic']:
+        return
     if uid is None:
         return
-    print(uid)
     user = config.get_subscription(uid)
     name = user.name
 
@@ -46,8 +46,9 @@ async def dy_pusher(bot: Bot, config: Config):
                     image = await get_dynamic_screenshot(dynamic.url)
                     break
                 except Exception as e:
+                    log.error(e.args)
                     log.error('截图失败，以下为错误日志:')
-                    log.error(traceback(e))
+                    log.error(traceback.format_exc())
                 await asyncio.sleep(0.1)
             if not image:
                 log.error('已达到重试上限，将在下个轮询中重新尝试')
