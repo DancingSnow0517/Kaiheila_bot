@@ -30,6 +30,9 @@ async def live_pusher(bot: Bot, config: Config):
         old_status = status[uid]
 
         if new_status != old_status:
+            if new_status == 0:
+                status[uid] = new_status
+                continue
             room_id = info['short_id'] if info['short_id'] else info['room_id']
             url = 'https://live.bilibili.com/' + str(room_id)
             name = info['uname']
