@@ -1,9 +1,11 @@
-from typing import Awaitable
+from typing import Awaitable, TYPE_CHECKING
 import asyncio
 
 from .libs.chatbridge.core.client import ChatBridgeClient
 from .libs.chatbridge.core.network.protocol import ChatPayload
-from ..bot import KaiheilaBot
+
+if TYPE_CHECKING:
+    from ..bot import KaiheilaBot
 
 
 def sync(func: Awaitable):
@@ -15,7 +17,7 @@ def sync(func: Awaitable):
 
 
 class KaiheilaClient(ChatBridgeClient):
-    def __init__(self, bot: KaiheilaBot):
+    def __init__(self, bot: 'KaiheilaBot'):
         config = bot.config
         super().__init__(config.aes_key, config.client_info, server_address=config.server_address)
         self.config = config
