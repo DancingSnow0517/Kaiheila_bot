@@ -134,3 +134,4 @@ dmypy.json
 /src/config.json
 /src/config.yml
 /src/Temp/
+/src/logs/
