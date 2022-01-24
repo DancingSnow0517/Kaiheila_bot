@@ -38,13 +38,13 @@ class Dynamic:
         #                 f"{self.url}\n" +
         #                 MessageSegment.image(f"base64://{img}")
         #                 )
-        if not os.path.exists('Temp/dy'):
-            os.makedirs('Temp/dy')
-        with open(f'Temp/dy/{self.uid}.png', 'wb') as f:
+        if not os.path.exists('Temp'):
+            os.makedirs('Temp')
+        with open(f'Temp/{self.uid}.png', 'wb') as f:
             img_data = base64.b64decode(img)
             f.write(img_data)
 
-        image_url = await bot.upload_asset(f'Temp/dy/{self.uid}.png')
+        image_url = await bot.upload_asset(f'Temp/{self.uid}.png')
 
         print(image_url)
 
