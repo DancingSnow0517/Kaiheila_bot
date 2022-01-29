@@ -1,6 +1,8 @@
+import collections
 import logging
 import functools
 import inspect
+import queue
 
 from khl import Bot, MessageTypes, Message
 
@@ -23,6 +25,7 @@ class KaiheilaBot(Bot):
         super().__init__(config.token)
         self.config = config
         self.cb_client = KaiheilaClient(self)
+        self.cb_client.start()
         self.client.register(MessageTypes.TEXT, self.on_text_msg)
         logging.basicConfig(level=config.log_level, format='[%(asctime)s] [%(module)s] [%(threadName)s/%(levelname)s]: %(message)s')
         commands.register(self, config.prefixes, config)
