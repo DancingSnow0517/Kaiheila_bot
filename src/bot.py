@@ -2,7 +2,6 @@ import collections
 import logging
 import functools
 import inspect
-import queue
 
 from khl import Bot, MessageTypes, Message
 
