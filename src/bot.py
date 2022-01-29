@@ -24,7 +24,6 @@ class KaiheilaBot(Bot):
         self.config = config
         self.cb_client = KaiheilaClient(self)
         self.client.register(MessageTypes.TEXT, self.on_text_msg)
-        logging.Formatter(fmt='%(asctime)s', datefmt='%H:%M:%S')
         logging.basicConfig(level=config.log_level, format='[%(asctime)s] [%(module)s] [%(threadName)s/%(levelname)s]: %(message)s')
         commands.register(self, config.prefixes, config)
 

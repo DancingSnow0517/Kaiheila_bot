@@ -18,7 +18,7 @@ class _Config(ClientConfig):
 
     def save(self, path: str):
         with open(path, "w", encoding="UTF-8") as fp:
-            yaml.safe_dump(self.serialize(), fp, allow_unicode=True, indent=4)
+            yaml.dump(self.serialize(), fp, allow_unicode=True, indent=4, Dumper=yaml.RoundTripDumper)
 
 
 class RconServer(Serializable):

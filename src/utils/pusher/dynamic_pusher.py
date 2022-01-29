@@ -16,6 +16,8 @@ last_time: dict = {}
 async def dy_pusher(bot: Bot, config: Config):
     """动态推送"""
     uid = config.getnext_subscription_uid()
+    if uid is None:
+        return
     if not config.subscription[uid]['dynamic']:
         return
     if uid is None:
