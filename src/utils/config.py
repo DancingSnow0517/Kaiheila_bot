@@ -45,7 +45,8 @@ class Config(_Config):
     khl_server_id: str = ''
     khl_channel: List[str] = []
     khl_channel_mc_chat: str = ""
-    log_level: str = "DEBUG"
+    log_level: str = 'DEBUG'
+    mcdr_server_path: str = ''
 
     @classmethod
     def load(cls, path: str = 'config.yml'):

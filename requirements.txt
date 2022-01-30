@@ -1,4 +1,5 @@
 KaiHeiLaCardBuilder >= 1.0.4
+khl.py >= 0.2.3
 mcdreforged >= 2.3.0
 httpx>=0.21.3
 APScheduler>=3.8.1

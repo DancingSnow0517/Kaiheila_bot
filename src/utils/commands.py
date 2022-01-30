@@ -1,3 +1,6 @@
+import json
+import os
+
 from khl import Bot, Message
 from khl_card.card import *
 from khl_card.modules import *
@@ -7,7 +10,8 @@ from .config import Config
 from .libs.bilireq import BiliReq, RequestError
 
 help_msg = '''[!!help] 显示帮助信息
-[!!mc] 发送消息到游戏'''
+[!!mc] 发送消息到游戏
+[!!stats] 查看统计信息帮助'''
 
 Bilibili_bot_msg = '''[!!关注] <UID>
 [!!取关] <UID>
@@ -18,6 +22,26 @@ Bilibili_bot_msg = '''[!!关注] <UID>
 [!!关闭直播] <UID>
 [!!关闭权限] 关闭后所有人能叫出机器人
 [!!开启权限] 开启后需要权限，才能叫出机器人'''
+
+stats_help_msg = '''[!!stats] <类别> <内容>
+`<类别>`: `killed`, `killed_by`, `dropped`, `picked_up`, `used`, `mined`, `broken`, `crafted`, `custom`, `plugin`
+更多详情见[Wiki](https://minecraft.fandom.com/zh/wiki/%E7%BB%9F%E8%AE%A1%E4%BF%A1%E6%81%AF)
+例子：
+`!!stats used diamond_pickaxe`
+`!!stats custom time_since_rest`'''
+
+c1_list = [
+    'killed',
+    'killed_by',
+    'dropped',
+    'picked_up',
+    'used',
+    'mined',
+    'broken',
+    'crafted',
+    'custom',
+    'plugin'
+]
 
 
 def register(bot: Bot, prefixes, config: Config):
@@ -206,3 +230,56 @@ def register(bot: Bot, prefixes, config: Config):
         config.bilibili_permission = False
         config.save()
         await msg.reply('权限已经关闭了，所有人均可操作')
+
+    @bot.command(prefixes=prefixes)
+    async def stats(msg: Message, *args):
+        stats_card = Card([
+            Header('stats 帮助信息'),
+            Section(Kmarkdown(stats_help_msg))
+        ])
+        if len(args) < 2:
+            await msg.reply([stats_card.build()])
+            return
+        if args[0] not in c1_list:
+            await msg.reply([stats_card.build()])
+            return
+        # stats文件夹列表
+        stats_path = config.mcdr_server_path + '/server/world/stats'
+        # 利用StatsHelper获取的uuid列表
+        uuid_file = config.mcdr_server_path + '/config/StatsHelper/uuid.json'
+        with open(uuid_file, 'r', encoding='utf-8') as f:
+            uuid = json.load(f)
+        data = {}
+        for i in uuid:
+            if not os.path.exists(f'{stats_path}/{uuid[i]}.json'):
+                continue
+            with open(f'{stats_path}/{uuid[i]}.json', 'r', encoding='utf-8') as f:
+                js = json.load(f)
+            player_data = js['stats']
+            if f'minecraft:{args[0]}' in player_data:
+                if f'minecraft:{args[1]}' in player_data[f'minecraft:{args[0]}']:
+                    data[i] = player_data[f'minecraft:{args[0]}'][f'minecraft:{args[1]}']
+        if data == {}:
+            await msg.reply('未知或空统计信息')
+        else:
+            sorted_data = sorted(data.items(), key=lambda kv: kv[1], reverse=True)
+            count = 0
+            ranks = '**排名**\n'
+            players = '**玩家**\n'
+            values = '**值**\n'
+            for i in sorted_data:
+                count += 1
+                if count == 15:
+                    ranks += f'#{count}'
+                    players += f'{i[0]}'
+                    values += f'{i[1]}' if i[1] < 1000 else f'{format(i[1]/1000, ".3f")}'
+                    break
+                else:
+                    ranks += f'#{count}\n'
+                    players += f'{i[0]}\n'
+                    values += f'{i[1]}\n' if i[1] < 1000 else f'{format(i[1] / 1000, ".3f")}K\n'
+            data_card = Card([
+                Header(f'统计信息 {args[0]}.{args[1]}'),
+                Section(Paragraph(3, [Kmarkdown(ranks), Kmarkdown(players), Kmarkdown(values)]))
+            ])
+            await msg.reply([data_card.build()])
