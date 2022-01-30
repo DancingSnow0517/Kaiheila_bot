@@ -46,8 +46,6 @@ class Dynamic:
 
         image_url = await bot.upload_asset(f'Temp/{self.uid}.png')
 
-        print(image_url)
-
         self.msg_card = Card([
             Header(f'{self.name} {type_msg.get(self.type, type_msg[0])}'),
             Section(Kmarkdown(f'[网页链接]({self.url})')),

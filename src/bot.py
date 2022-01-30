@@ -1,17 +1,17 @@
-import collections
-import logging
 import functools
 import inspect
+import logging
 
 from khl import Bot, MessageTypes, Message
 
 from utils import commands
 from utils.browser import delete_pyppeteer, install
+from utils.cb_client import KaiheilaClient
 from utils.config import Config
+from utils.libs.chatbridge.common.logger import Logger
 from utils.pusher.dynamic_pusher import dy_pusher
 from utils.pusher.live_pusher import live_pusher
-from utils.libs.chatbridge.common.logger import Logger
-from utils.cb_client import KaiheilaClient
+from utils.pusher.chat_bridge_pusher import cb_pusher
 
 help_msg = '''[!!help] 显示帮助信息
 [!!mc] 发送消息到游戏
@@ -34,6 +34,7 @@ class KaiheilaBot(Bot):
         install()
 
         self.task.add_interval(seconds=10, timezone='Asia/Shanghai')(self.push)
+        self.task.add_interval(seconds=0.5, timezone='Asia/Shanghai')(self.cb_push)
 
     @staticmethod
     def patch_logging():
@@ -47,6 +48,9 @@ class KaiheilaBot(Bot):
     async def push(self):
         await dy_pusher(self, self.config)
         await live_pusher(self, self.config)
+
+    async def cb_push(self):
+        await cb_pusher(self, self.config)
 
     async def on_text_msg(self, message: Message):
         self.cb_client.send_chat(message.content, message.author.nickname)
