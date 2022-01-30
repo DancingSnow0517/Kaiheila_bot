@@ -53,7 +53,8 @@ class KaiheilaBot(Bot):
         await cb_pusher(self, self.config)
 
     async def on_text_msg(self, message: Message):
-        self.cb_client.send_chat(message.content, message.author.nickname)
+        if message.ctx.channel.id == self.config.khl_channel_mc_chat:
+            self.cb_client.send_chat(message.content, message.author.nickname)
 
 
 if __name__ == '__main__':
