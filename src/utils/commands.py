@@ -1,7 +1,7 @@
 import json
 import os
 
-from khl import Bot, Message
+from khl import Bot, Message, MessageTypes
 from khl_card.card import *
 from khl_card.modules import *
 from khl_card.accessory import *
@@ -41,6 +41,36 @@ c1_list = [
     'crafted',
     'custom',
     'plugin'
+]
+plugin_list = [
+    'digT',
+    'active'
+]
+tool_list = [
+    'wooden_pickaxe',
+    'wooden_axe',
+    'wooden_shovel',
+    'wooden_hoe',
+    'stone_pickaxe',
+    'stone_axe',
+    'stone_shovel',
+    'stone_hoe',
+    'iron_pickaxe',
+    'iron_axe',
+    'iron_shovel',
+    'iron_hoe',
+    'gold_pickaxe',
+    'gold_axe',
+    'gold_shovel',
+    'gold_hoe',
+    'diamond_pickaxe',
+    'diamond_axe',
+    'diamond_shovel',
+    'diamond_hoe',
+    'netherite_pickaxe',
+    'netherite_axe',
+    'netherite_shovel',
+    'netherite_hoe'
 ]
 
 
@@ -250,15 +280,43 @@ def register(bot: Bot, prefixes, config: Config):
         with open(uuid_file, 'r', encoding='utf-8') as f:
             uuid = json.load(f)
         data = {}
-        for i in uuid:
-            if not os.path.exists(f'{stats_path}/{uuid[i]}.json'):
-                continue
-            with open(f'{stats_path}/{uuid[i]}.json', 'r', encoding='utf-8') as f:
-                js = json.load(f)
-            player_data = js['stats']
-            if f'minecraft:{args[0]}' in player_data:
-                if f'minecraft:{args[1]}' in player_data[f'minecraft:{args[0]}']:
-                    data[i] = player_data[f'minecraft:{args[0]}'][f'minecraft:{args[1]}']
+        if args[0] != 'plugin':
+            for i in uuid:
+                if not os.path.exists(f'{stats_path}/{uuid[i]}.json'):
+                    continue
+                with open(f'{stats_path}/{uuid[i]}.json', 'r', encoding='utf-8') as f:
+                    js = json.load(f)
+                player_data = js['stats']
+                if f'minecraft:{args[0]}' in player_data:
+                    if f'minecraft:{args[1]}' in player_data[f'minecraft:{args[0]}']:
+                        data[i] = player_data[f'minecraft:{args[0]}'][f'minecraft:{args[1]}']
+        else:
+            if args[1] not in plugin_list:
+                await msg.reply('`plugin` 中目前支持 `digT`和`active`', type=MessageTypes.KMD)
+                return
+            if args[1] == 'digT':
+                for i in uuid:
+                    data[i] = 0
+                    if not os.path.exists(f'{stats_path}/{uuid[i]}.json'):
+                        continue
+                    with open(f'{stats_path}/{uuid[i]}.json', 'r', encoding='utf-8') as f:
+                        js = json.load(f)
+                    player_data = js['stats']
+                    for tool in tool_list:
+                        if 'minecraft:used' in player_data:
+                            if f'minecraft:{tool}' in player_data['minecraft:used']:
+                                data[i] += int(player_data['minecraft:used'][f'minecraft:{tool}'])
+            if args[1] == 'active':
+                for i in uuid:
+                    if not os.path.exists(f'{stats_path}/{uuid[i]}.json'):
+                        continue
+                    with open(f'{stats_path}/{uuid[i]}.json', 'r', encoding='utf-8') as f:
+                        js = json.load(f)
+                    player_data = js['stats']
+                    if 'minecraft:custom' in player_data:
+                        if 'minecraft:play_time' in player_data['minecraft:custom']:
+                            data[i] = round(player_data['minecraft:custom']['minecraft:play_time'] / 20 / 60 / 60, 2)
+
         if data == {}:
             await msg.reply('未知或空统计信息')
         else:
@@ -272,7 +330,7 @@ def register(bot: Bot, prefixes, config: Config):
                 if count == 15:
                     ranks += f'#{count}'
                     players += f'{i[0]}'
-                    values += f'{i[1]}' if i[1] < 1000 else f'{format(i[1]/1000, ".3f")}'
+                    values += f'{i[1]}' if i[1] < 1000 else f'{format(i[1] / 1000, ".3f")}'
                     break
                 else:
                     ranks += f'#{count}\n'
