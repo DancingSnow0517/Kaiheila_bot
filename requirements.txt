@@ -8,3 +8,4 @@ appdirs>=1.4.4
 colorlog>=6.5.0
 
 pycryptodome
+parse~=1.19.0

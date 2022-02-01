@@ -22,6 +22,7 @@ class _Config(ClientConfig):
 
 
 class RconServer(Serializable):
+    name: str
     address: str
     port: int
     password: str
@@ -55,13 +56,14 @@ class Config(_Config):
     def save(self, path: str = 'config.yml'):
         return super().save(path)
 
-    def add_rocn(self, address: str, port: int, password: str):
-        self.rcon.append({'address': address, 'port': port, 'password': password})
+    def add_rocn(self, name: str, address: str, port: int, password: str):
+        self.rcon.append({'name': name, 'address': address, 'port': port, 'password': password})
+        self.save()
 
     def get_rcon_list(self) -> List[RconServer]:
         ret = []
         for i in self.rcon:
-            ret.append(RconServer(address=i['address'], port=i['port'], password=i['password']))
+            ret.append(RconServer(name=i['name'], address=i['address'], port=i['port'], password=i['password']))
         return ret
 
     def add_subscription(self, uid: str, name: str, live=True, dynamic=True) -> bool:

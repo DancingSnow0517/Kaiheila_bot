@@ -5,12 +5,13 @@ from khl import Bot, Message, MessageTypes
 from khl_card.card import *
 from khl_card.modules import *
 from khl_card.accessory import *
+from mcdreforged.minecraft.rcon.rcon_connection import RconConnection
 
 from .config import Config
 from .libs.bilireq import BiliReq, RequestError
+from .libs.player_list import get_server_player_list
 
 help_msg = '''[!!help] 显示帮助信息
-[!!mc] 发送消息到游戏
 [!!stats] 查看统计信息帮助'''
 
 Bilibili_bot_msg = '''[!!关注] <UID>
@@ -341,3 +342,37 @@ def register(bot: Bot, prefixes, config: Config):
                 Section(Paragraph(3, [Kmarkdown(ranks), Kmarkdown(players), Kmarkdown(values)]))
             ])
             await msg.reply([data_card.build()])
+
+    @bot.command(prefixes=prefixes, aliases=['list'])
+    async def player_list(msg: Message):
+        rcon_list = config.get_rcon_list()
+        data = {}
+        online_total = 0
+        for i in rcon_list:
+            data[i.name] = {}
+            rcon = RconConnection(address=i.address, password=i.password, port=i.port)
+            try:
+                rcon.connect()
+                rt = rcon.send_command('list')
+                rcon.disconnect()
+                data[i.name]['amount'], data[i.name]['limit'], data[i.name]['players'] = get_server_player_list(rt)
+                online_total += data[i.name]['amount']
+            except ConnectionRefusedError:
+                data[i.name] = ''
+        list_card = Card([
+            Header(f'共有 {online_total} 名玩家已连接至此服务器。')
+        ])
+        for i in config.rcon:
+            if data[i['name']] == '':
+                list_card.modules.append(Section(Kmarkdown(f'```\n[{i["name"]}] 服务器未连接\n```')))
+            else:
+                list_card.modules.append(Section(Kmarkdown(f'```\n[{i["name"]}] {data[i["name"]]["players"]}\n```')))
+        await msg.reply([list_card.build()])
+
+    @bot.command(prefixes=prefixes)
+    async def addRcon(msg: Message, *args):
+        if len(args) != 4:
+            await msg.reply('用!!addRcon <name> <address> <password> <port>')
+            return
+        config.add_rocn(args[0], args[1], int(args[3]), args[2])
+        await msg.reply(f'RCON {args[0]} 添加成功')
