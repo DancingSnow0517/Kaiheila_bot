@@ -34,7 +34,7 @@ class KaiheilaBot(Bot):
         install()
 
         self.task.add_interval(seconds=10, timezone='Asia/Shanghai')(self.push)
-        # self.task.add_interval(seconds=0.5, timezone='Asia/Shanghai')(self.cb_push)
+        self.task.add_interval(seconds=0.5, timezone='Asia/Shanghai')(self.cb_push)
 
     @staticmethod
     def patch_logging():

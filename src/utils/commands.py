@@ -2,6 +2,7 @@ import json
 import os
 
 from khl import Bot, Message, MessageTypes
+from khl.card import ThemeTypes
 from khl_card.card import *
 from khl_card.modules import *
 from khl_card.accessory import *
@@ -369,10 +370,11 @@ def register(bot: Bot, prefixes, config: Config):
             Header(f'共有 {online_total} 名玩家已连接至此服务器。')
         ])
         for i in config.rcon:
+            list_card.modules.append(Section(Kmarkdown(f'**{i["name"]}: **')))
             if data[i['name']] == '':
-                list_card.modules.append(Section(Kmarkdown(f'```\n[{i["name"]}] 服务器未连接\n```')))
+                list_card.modules.append(Section(Kmarkdown(f'```\n服务器未连接\n```')))
             else:
-                list_card.modules.append(Section(Kmarkdown(f'```\n[{i["name"]}] {data[i["name"]]["players"]}\n```')))
+                list_card.modules.append(Section(Kmarkdown(f'```\n{data[i["name"]]["players"]}\n```')))
         await msg.reply([list_card.build()])
 
     @bot.command(prefixes=prefixes)
