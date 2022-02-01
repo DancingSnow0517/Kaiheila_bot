@@ -12,7 +12,10 @@ from .libs.bilireq import BiliReq, RequestError
 from .libs.player_list import get_server_player_list
 
 help_msg = '''[!!help] 显示帮助信息
-[!!stats] 查看统计信息帮助'''
+[!!list] 查看服务器玩家列表
+[!!stats] 查看统计信息帮助
+[!!whitelist] 查看白名单相关帮助
+[!!addRcon] 添加rcon服务器'''
 
 Bilibili_bot_msg = '''[!!关注] <UID>
 [!!取关] <UID>
@@ -30,6 +33,9 @@ stats_help_msg = '''[!!stats] <类别> <内容>
 例子：
 `!!stats used diamond_pickaxe`
 `!!stats custom time_since_rest`'''
+
+whitelist_help_msg = '''[!!whitelist] add <name> 添加白名单
+[!!whitelist] remove <name> 删除白名单'''
 
 c1_list = [
     'killed',
@@ -371,8 +377,37 @@ def register(bot: Bot, prefixes, config: Config):
 
     @bot.command(prefixes=prefixes)
     async def addRcon(msg: Message, *args):
+        if msg.author.id not in config.permission:
+            await msg.reply('你没有权限执行')
+            return
         if len(args) != 4:
             await msg.reply('用!!addRcon <name> <address> <password> <port>')
             return
         config.add_rocn(args[0], args[1], int(args[3]), args[2])
         await msg.reply(f'RCON {args[0]} 添加成功')
+
+    @bot.command(prefixes=prefixes)
+    async def whitelist(msg: Message, *args):
+        if msg.author.id not in config.permission:
+            await msg.reply('你没有权限执行')
+            return
+        if len(args) != 2:
+            await msg.reply(f'```\n{whitelist_help_msg}\n```', type=9)
+            return
+        if args[0] == 'add':
+            proxy = config.get_velocity_rocn()
+            rcon = RconConnection(address=proxy.address, port=proxy.port, password=proxy.password)
+            rcon.connect()
+            rcon.send_command(f'lls_whitelist add {args[1]} all -c')
+            rcon.disconnect()
+            await msg.reply(f'{args[1]} 白名添加成功')
+            return
+        if args[0] == 'remove':
+            proxy = config.get_velocity_rocn()
+            rcon = RconConnection(address=proxy.address, port=proxy.port, password=proxy.password)
+            rcon.connect()
+            rcon.send_command(f'lls_whitelist remove {args[1]} all')
+            rcon.disconnect()
+            await msg.reply(f'{args[1]} 白名删除成功')
+            return
+        await msg.reply(f'```\n{whitelist_help_msg}\n```', type=9)

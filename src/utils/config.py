@@ -48,6 +48,7 @@ class Config(_Config):
     khl_channel_mc_chat: str = ""
     log_level: str = 'DEBUG'
     mcdr_server_path: str = ''
+    velocity_rcon: dict = {'address': '127.0.0.1', 'password': 'rcon_password', 'port': 25566}
 
     @classmethod
     def load(cls, path: str = 'config.yml'):
@@ -65,6 +66,9 @@ class Config(_Config):
         for i in self.rcon:
             ret.append(RconServer(name=i['name'], address=i['address'], port=i['port'], password=i['password']))
         return ret
+
+    def get_velocity_rocn(self) -> RconServer:
+        return RconServer(name='velocity', address=self.velocity_rcon['address'], port=self.velocity_rcon['port'], password=self.velocity_rcon['password'])
 
     def add_subscription(self, uid: str, name: str, live=True, dynamic=True) -> bool:
         if uid in self.subscription:
