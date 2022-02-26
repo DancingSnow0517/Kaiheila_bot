@@ -2,7 +2,6 @@ import json
 import os
 
 from khl import Bot, Message, MessageTypes
-from khl.card import ThemeTypes
 from khl_card.card import *
 from khl_card.modules import *
 from khl_card.accessory import *
@@ -125,7 +124,7 @@ def register(bot: Bot, prefixes, config: Config):
                         Section(Kmarkdown(f'```\n{str(e)}\n```'))
                     ])
                     await msg.reply([err_card.build()])
-        result = config.add_subscription(uid, name)
+        result = config.add_subscription(uid, name=name)
         if result:
             await msg.reply(f'已关注 {name}（{uid}）')
         else:
@@ -143,7 +142,7 @@ def register(bot: Bot, prefixes, config: Config):
         if not uid.isdecimal():
             await msg.reply('UID 必须为纯数字')
             return
-        name = config.subscription[uid]['name']
+        name = config.subscription[uid].name
         result = config.del_subscription(uid)
         if result:
             await msg.reply(f'已取关 {name}（{uid}）')
@@ -183,8 +182,8 @@ def register(bot: Bot, prefixes, config: Config):
         if uid not in config.subscription:
             await msg.reply(f'UID（{uid}）未关注，请先关注后再操作')
         else:
-            name = config.subscription[uid]['name']
-            config.subscription[uid]['dynamic'] = True
+            name = config.subscription[uid].name
+            config.subscription[uid].dynamic = True
             config.save()
             await msg.reply(f'已开启 {name}（{uid}）的动态推送')
 
@@ -204,8 +203,8 @@ def register(bot: Bot, prefixes, config: Config):
         if uid not in config.subscription:
             await msg.reply(f'UID（{uid}）未关注，请先关注后再操作')
         else:
-            name = config.subscription[uid]['name']
-            config.subscription[uid]['dynamic'] = False
+            name = config.subscription[uid].name
+            config.subscription[uid].live = False
             config.save()
             await msg.reply(f'已关闭 {name}（{uid}）的动态推送')
 
@@ -225,8 +224,8 @@ def register(bot: Bot, prefixes, config: Config):
         if uid not in config.subscription:
             await msg.reply(f'UID（{uid}）未关注，请先关注后再操作')
         else:
-            name = config.subscription[uid]['name']
-            config.subscription[uid]['live'] = True
+            name = config.subscription[uid].name
+            config.subscription[uid].live = True
             config.save()
             await msg.reply(f'已开启 {name}（{uid}）的直播动态推送')
 
@@ -246,8 +245,8 @@ def register(bot: Bot, prefixes, config: Config):
         if uid not in config.subscription:
             await msg.reply(f'UID（{uid}）未关注，请先关注后再操作')
         else:
-            name = config.subscription[uid]['name']
-            config.subscription[uid]['live'] = False
+            name = config.subscription[uid].name
+            config.subscription[uid].live = False
             config.save()
             await msg.reply(f'已关闭 {name}（{uid}）的直播动态推送')
 
@@ -370,11 +369,11 @@ def register(bot: Bot, prefixes, config: Config):
             Header(f'共有 {online_total} 名玩家已连接至此服务器。')
         ])
         for i in config.rcon:
-            list_card.modules.append(Section(Kmarkdown(f'**{i["name"]}: **')))
-            if data[i['name']] == '':
+            list_card.modules.append(Section(Kmarkdown(f'**{i.name}: **')))
+            if data[i.name] == '':
                 list_card.modules.append(Section(Kmarkdown(f'```\n服务器未连接\n```')))
             else:
-                list_card.modules.append(Section(Kmarkdown(f'```\n{data[i["name"]]["players"]}\n```')))
+                list_card.modules.append(Section(Kmarkdown(f'```\n{data[i.name]["players"]}\n```')))
         await msg.reply([list_card.build()])
 
     @bot.command(prefixes=prefixes)
@@ -385,7 +384,7 @@ def register(bot: Bot, prefixes, config: Config):
         if len(args) != 4:
             await msg.reply('用!!addRcon <name> <address> <password> <port>')
             return
-        config.add_rocn(args[0], args[1], int(args[3]), args[2])
+        config.add_rcon(name=args[0], address=args[1], password=args[2], port=int(args[3]))
         await msg.reply(f'RCON {args[0]} 添加成功')
 
     @bot.command(prefixes=prefixes)
@@ -397,7 +396,7 @@ def register(bot: Bot, prefixes, config: Config):
             await msg.reply(f'```\n{whitelist_help_msg}\n```', type=9)
             return
         if args[0] == 'add':
-            proxy = config.get_velocity_rocn()
+            proxy = config.get_velocity_rcon()
             rcon = RconConnection(address=proxy.address, port=proxy.port, password=proxy.password)
             rcon.connect()
             rcon.send_command(f'lls_whitelist add {args[1]} all -c')
@@ -405,7 +404,7 @@ def register(bot: Bot, prefixes, config: Config):
             await msg.reply(f'{args[1]} 白名添加成功')
             return
         if args[0] == 'remove':
-            proxy = config.get_velocity_rocn()
+            proxy = config.get_velocity_rcon()
             rcon = RconConnection(address=proxy.address, port=proxy.port, password=proxy.password)
             rcon.connect()
             rcon.send_command(f'lls_whitelist remove {args[1]} all')

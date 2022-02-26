@@ -3,15 +3,17 @@ import inspect
 import logging
 
 from khl import Bot, MessageTypes, Message
+import colorama
 
 from utils import commands
 from utils.browser import delete_pyppeteer, install
 from utils.cb_client import KaiheilaClient
-from utils.config import Config
+from utils.config import Config, SentryConfig
 from utils.libs.chatbridge.common.logger import Logger
 from utils.pusher.dynamic_pusher import dy_pusher
 from utils.pusher.live_pusher import live_pusher
 from utils.pusher.chat_bridge_pusher import cb_pusher
+from utils.libs.sentry import init_sentry
 
 help_msg = '''[!!help] 显示帮助信息
 [!!mc] 发送消息到游戏
@@ -19,7 +21,9 @@ help_msg = '''[!!help] 显示帮助信息
 
 
 class KaiheilaBot(Bot):
-    def __init__(self, config: Config):
+    def __init__(self, config: Config, sentry_config: SentryConfig):
+        colorama.init(autoreset=True, wrap=True)
+        init_sentry(sentry_config, config.log_level)
         self.patch_logging()
         super().__init__(config.token)
         self.config = config
@@ -58,5 +62,5 @@ class KaiheilaBot(Bot):
 
 
 if __name__ == '__main__':
-    bot = KaiheilaBot(Config.load())
+    bot = KaiheilaBot(Config.load(), SentryConfig.load())
     bot.run()
