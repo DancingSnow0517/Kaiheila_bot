@@ -10,8 +10,8 @@ from .libs.chatbridge.core.config import ClientConfig
 
 class ConfigBase(Serializable):
     __config_file: str = "config.yml"
-    __loader: Callable[[IO], Any] = yaml.round_trip_load
-    __dumper: Callable[[Any, IO], Any] = lambda data, stream: yaml.round_trip_dump(data, stream, allow_unicode=True, indent=4)
+    __loader: Callable[[ConfigBase, IO], Any] = lambda self, stream: yaml.round_trip_load(stream)
+    __dumper: Callable[[ConfigBase, IO], Any] = lambda self, stream: yaml.round_trip_dump(self.serialize(), stream, allow_unicode=True, indent=4)
 
     @classmethod
     def load(cls, path: str = __config_file):
@@ -23,7 +23,7 @@ class ConfigBase(Serializable):
 
     def save(self, path: str = __config_file):
         with open(path, "w", encoding="UTF-8") as fp:
-            self.__dumper(self.serialize(), fp)
+            self.__dumper(fp)
 
 
 class RconServer(Serializable):
