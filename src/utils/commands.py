@@ -393,7 +393,7 @@ def register(bot: Bot, prefixes, config: Config):
             await msg.reply('你没有权限执行')
             return
         if len(args) != 2:
-            await msg.reply(f'```\n{whitelist_help_msg}\n```', type=9)
+            await msg.reply(f'```\n{whitelist_help_msg}\n```', type=MessageTypes.KMD)
             return
         if args[0] == 'add':
             proxy = config.get_velocity_rcon()
@@ -411,4 +411,4 @@ def register(bot: Bot, prefixes, config: Config):
             rcon.disconnect()
             await msg.reply(f'{args[1]} 白名删除成功')
             return
-        await msg.reply(f'```\n{whitelist_help_msg}\n```', type=9)
+        await msg.reply(f'```\n{whitelist_help_msg}\n```', type=MessageTypes.KMD)
