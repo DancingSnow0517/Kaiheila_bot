@@ -2,6 +2,7 @@ import functools
 import inspect
 import logging
 
+import nest_asyncio
 from khl import Bot, MessageTypes, Message
 import colorama
 
@@ -12,7 +13,6 @@ from utils.config import Config, SentryConfig
 from utils.libs.chatbridge.common.logger import Logger
 from utils.pusher.dynamic_pusher import dy_pusher
 from utils.pusher.live_pusher import live_pusher
-from utils.pusher.chat_bridge_pusher import cb_pusher
 from utils.libs.sentry import init_sentry
 
 help_msg = '''[!!help] 显示帮助信息
@@ -38,7 +38,6 @@ class KaiheilaBot(Bot):
         install()
 
         self.task.add_interval(seconds=10, timezone='Asia/Shanghai')(self.push)
-        self.task.add_interval(seconds=0.5, timezone='Asia/Shanghai')(self.cb_push)
 
     @staticmethod
     def patch_logging():
@@ -53,14 +52,12 @@ class KaiheilaBot(Bot):
         await dy_pusher(self, self.config)
         await live_pusher(self, self.config)
 
-    async def cb_push(self):
-        await cb_pusher(self, self.config)
-
     async def on_text_msg(self, message: Message):
         if message.ctx.channel.id == self.config.khl_channel_mc_chat:
             self.cb_client.send_chat(message.content, message.author.nickname)
 
 
 if __name__ == '__main__':
+    nest_asyncio.apply()
     bot = KaiheilaBot(Config.load(), SentryConfig.load())
     bot.run()
