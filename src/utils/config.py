@@ -9,21 +9,28 @@ from .libs.chatbridge.core.config import ClientConfig
 
 
 class ConfigBase(Serializable):
-    __config_file: str = "config.yml"
-    __loader: Callable[[ConfigBase, IO], Any] = lambda self, stream: yaml.round_trip_load(stream)
-    __dumper: Callable[[ConfigBase, IO], Any] = lambda self, stream: yaml.round_trip_dump(self.serialize(), stream, allow_unicode=True, indent=4)
+    @staticmethod
+    def _loader(stream: IO):
+        return yaml.round_trip_load(stream)
+
+    def _dumper(self, stream: IO):
+        yaml.round_trip_dump(self.serialize(), stream, allow_unicode=True, indent=4)
+
+    @staticmethod
+    def get_file() -> str:
+        return 'config.yml'
 
     @classmethod
-    def load(cls, path: str = __config_file):
-        if not os.path.exists(path):
+    def load(cls):
+        if not os.path.exists(cls.get_file()):
             cls.get_default().save()
             return cls.get_default()
-        with open(path, "r", encoding="UTF-8") as fp:
-            return cls.deserialize(cls.__loader(fp))
+        with open(cls.get_file(), "r", encoding="UTF-8") as fp:
+            return cls.deserialize(cls._loader(fp))
 
-    def save(self, path: str = __config_file):
-        with open(path, "w", encoding="UTF-8") as fp:
-            self.__dumper(fp)
+    def save(self):
+        with open(self.get_file(), "w", encoding="UTF-8") as fp:
+            self._dumper(fp)
 
 
 class RconServer(Serializable):
@@ -40,9 +47,17 @@ class Subscription(Serializable):
 
 
 class SentryConfig(ConfigBase):
-    __config_file = "sentry.json"
-    __loader = json.load
-    __dumper = lambda data, stream: json.dump(data, stream, ensure_ascii=False, indent=4, sort_keys=True)
+
+    @staticmethod
+    def _loader(stream: IO):
+        return json.load(stream)
+
+    def _dumper(self, stream: IO):
+        json.dump(self.serialize(), stream, ensure_ascii=False, indent=4, sort_keys=True)
+
+    @staticmethod
+    def get_file() -> str:
+        return 'sentry.json'
 
     sentry_dsn: Optional[str]
     sentry_debug: bool = False
@@ -92,7 +107,8 @@ class Config(ConfigBase, ClientConfig):
         return self.rcon
 
     def get_velocity_rcon(self) -> RconServer:
-        return RconServer(name='velocity', address=self.velocity_rcon['address'], port=self.velocity_rcon['port'], password=self.velocity_rcon['password'])
+        return RconServer(name='velocity', address=self.velocity_rcon['address'], port=self.velocity_rcon['port'],
+                          password=self.velocity_rcon['password'])
 
     @overload
     def add_subscription(self, uid: str, *, name: str, live=True, dynamic=True) -> bool:
@@ -123,7 +139,7 @@ class Config(ConfigBase, ClientConfig):
         sub_list = list(self.subscription.keys())
         if not sub_list:
             return None
-        if self.next+1 >= len(sub_list):
+        if self.next + 1 >= len(sub_list):
             self.next = 0
         else:
             self.next += 1
