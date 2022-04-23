@@ -11,7 +11,7 @@ from .libs.chatbridge.core.config import ClientConfig
 class ConfigBase(Serializable):
     @staticmethod
     def _loader(stream: IO):
-        return yaml.round_trip_load(stream)
+        return yaml.load(stream)
 
     def _dumper(self, stream: IO):
         yaml.round_trip_dump(self.serialize(), stream, allow_unicode=True, indent=4)
@@ -53,13 +53,13 @@ class SentryConfig(ConfigBase):
         return json.load(stream)
 
     def _dumper(self, stream: IO):
-        json.dump(self.serialize(), stream, ensure_ascii=False, indent=4, sort_keys=True)
+        json.dump(self.serialize(), stream, indent=4, ensure_ascii=False, sort_keys=True)
 
     @staticmethod
     def get_file() -> str:
         return 'sentry.json'
 
-    sentry_dsn: Optional[str]
+    sentry_dsn: Optional[str] = None
     sentry_debug: bool = False
     sentry_release: Optional[str] = None
     sentry_environment: Optional[str] = None

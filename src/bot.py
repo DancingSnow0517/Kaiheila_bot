@@ -30,6 +30,7 @@ class KaiheilaBot(Bot):
         self.cb_client = KaiheilaClient(self)
         self.cb_client.start()
         self.client.register(MessageTypes.TEXT, self.on_text_msg)
+        self.client.register(MessageTypes.KMD, self.on_text_msg)
         logging.basicConfig(level=config.log_level, format='[%(asctime)s] [%(module)s] [%(threadName)s/%(levelname)s]: %(message)s')
         commands.register(self, config.prefixes, config)
 

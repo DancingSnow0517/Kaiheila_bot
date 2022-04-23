@@ -7,7 +7,7 @@ from appdirs import AppDirs
 from khl.task.manager import log
 from playwright.async_api import Browser, async_playwright
 
-from src.utils.config import Config
+from .config import Config
 
 _browser: Optional[Browser] = None
 
