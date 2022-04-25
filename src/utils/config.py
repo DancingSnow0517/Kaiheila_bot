@@ -1,6 +1,5 @@
-import json
 import os.path
-from typing import List, Dict, Optional, overload, Callable, Any, IO
+from typing import List, Dict, Optional, overload, IO
 
 from mcdreforged.utils.serializer import Serializable
 from ruamel import yaml
@@ -8,10 +7,10 @@ from ruamel import yaml
 from .libs.chatbridge.core.config import ClientConfig
 
 
-class ConfigBase(Serializable):
+class ConfigBase(ClientConfig):
     @staticmethod
     def _loader(stream: IO):
-        return yaml.load(stream)
+        return yaml.load(stream, Loader=yaml.Loader)
 
     def _dumper(self, stream: IO):
         yaml.round_trip_dump(self.serialize(), stream, allow_unicode=True, indent=4)
@@ -46,40 +45,7 @@ class Subscription(Serializable):
     live: bool
 
 
-class SentryConfig(ConfigBase):
-
-    @staticmethod
-    def _loader(stream: IO):
-        return json.load(stream)
-
-    def _dumper(self, stream: IO):
-        json.dump(self.serialize(), stream, indent=4, ensure_ascii=False, sort_keys=True)
-
-    @staticmethod
-    def get_file() -> str:
-        return 'sentry.json'
-
-    sentry_dsn: Optional[str] = None
-    sentry_debug: bool = False
-    sentry_release: Optional[str] = None
-    sentry_environment: Optional[str] = None
-    sentry_server_name: Optional[str] = None
-    sentry_sample_rate: float = 1.0
-    sentry_max_breadcrumbs: int = 100
-    sentry_attach_stacktrace: bool = False
-    sentry_send_default_pii: bool = False
-    sentry_request_bodies: str = "medium"
-    sentry_with_locals: bool = True
-    sentry_ca_certs: Optional[str] = None
-    sentry_before_send: Optional[Callable[[Any, Any], Optional[Any]]] = None
-    sentry_before_breadcrumb: Optional[Callable[[Any, Any], Optional[Any]]] = None
-    sentry_transport: Optional[Any] = None
-    sentry_http_proxy: Optional[str] = None
-    sentry_https_proxy: Optional[str] = None
-    sentry_shutdown_timeout: int = 2
-
-
-class Config(ConfigBase, ClientConfig):
+class Config(ConfigBase):
     token: str = ''
     rcon: List[RconServer] = []
     permission: List[str] = []
